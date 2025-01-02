@@ -1,0 +1,16 @@
+---
+- name: Install and configure RabbitMQ
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install RabbitMQ server package
+      apt:
+        name: rabbitmq-server
+        state: present
+        update_cache: yes
+
+    - name: Enable RabbitMQ service
+      systemd:
+        name: rabbitmq-server
+        enabled: yes
+        state: started

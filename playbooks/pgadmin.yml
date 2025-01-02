@@ -1,0 +1,30 @@
+---
+- name: Install pgAdmin
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Ensure the keyring directory exists
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add pgAdmin GPG key
+      shell: |
+        curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | gpg --dearmor -o /etc/apt/keyrings/pgadmin-keyring.gpg
+      args:
+        creates: /etc/apt/keyrings/pgadmin-keyring.gpg
+
+    - name: Add pgAdmin repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/pgadmin-keyring.gpg] https://ftp.postgresql.org/pub/pgadmin/pgadmin4/apt/{{ ansible_facts['distribution_release'] }} pgadmin4 main"
+        state: present
+
+    - name: Update apt cache after adding pgAdmin repository
+      apt:
+        update_cache: yes
+
+    - name: Install pgAdmin
+      apt:
+        name: pgadmin4
+        state: present

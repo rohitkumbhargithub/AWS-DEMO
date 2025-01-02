@@ -1,0 +1,26 @@
+---
+- name: Install Visual Studio Code
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install dependencies for Visual Studio Code (if needed)
+      apt:
+        name:
+          - apt-transport-https
+          - software-properties-common
+        state: present
+
+    - name: Add Microsoft GPG key for Visual Studio Code repository
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+
+    - name: Add the Visual Studio Code repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+        state: present
+
+    - name: Install Visual Studio Code
+      apt:
+        name: code
+        state: present

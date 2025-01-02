@@ -1,0 +1,18 @@
+---
+- name: Install and configure PostgreSQL
+  hosts: webservers
+  become: yes  
+  tasks:
+    - name: Install PostgreSQL and additional packages
+      apt:
+        name:
+          - postgresql
+          - postgresql-client
+          - postgresql-contrib
+        state: present
+
+    - name: Ensure PostgreSQL service is enabled and running
+      systemd:
+        name: postgresql
+        enabled: yes
+        state: started

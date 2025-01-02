@@ -1,0 +1,15 @@
+---
+- name: Install Redis
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Install Redis server
+      apt:
+        name: redis-server
+        state: present
+
+    - name: Enable and start Redis service
+      systemd:
+        name: redis-server
+        state: started
+        enabled: true

@@ -1,0 +1,48 @@
+---
+- name: Install Kubernetes packages
+  hosts: your_target_host_group
+  become: yes
+  tasks:
+    - name: Update apt package index
+      apt:
+        update_cache: yes
+
+    - name: Install apt-transport-https and curl
+      apt:
+        name:
+          - apt-transport-https
+          - curl
+        state: present
+
+    - name: Add Kubernetes GPG key
+      shell: |
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+      args:
+        creates: /etc/apt/trusted.gpg.d/kubernetes.asc
+
+    - name: Add Kubernetes APT repository
+      apt_repository:
+        repo: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+        state: present
+
+    - name: Install Kubernetes packages (kubelet, kubeadm, kubectl)
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Hold Kubernetes packages at a specific version
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: held
+
+    - name: Enable and start kubelet service
+      systemd:
+        name: kubelet
+        enabled: yes
+        state: started
